@@ -1,0 +1,98 @@
+// ─────────────────────────────────────────────────────────────
+// Bootstrap 5 variable overrides — maps our tokens onto Bootstrap's
+// SCSS API so all built-in components inherit the Elite NonVeg look.
+// Imported BEFORE bootstrap in main.scss.
+// ─────────────────────────────────────────────────────────────
+@use 'tokens' as t;
+
+// ── Color system ─────────────────────────────────────────────
+$primary: t.$en-crimson;
+$secondary: t.$en-gold;
+$success: t.$en-green;
+$danger: t.$en-accent;
+$warning: t.$en-gold;
+$info: t.$en-text-dim;
+$light: t.$en-surface;
+$dark: t.$en-ink-900;
+
+// Light-theme baseline (matches the warm butcher-paper tokens).
+$color-mode-type: data;
+
+// ── Body / surfaces ──────────────────────────────────────────
+$body-bg: t.$en-bg;
+$body-color: t.$en-text;
+$body-secondary-color: t.$en-text-dim;
+$body-tertiary-bg: t.$en-surface-raised;
+
+// ── Typography ───────────────────────────────────────────────
+$font-family-sans-serif: t.$en-font-body;
+$headings-font-family: t.$en-font-display;
+$headings-font-weight: 700;
+$headings-color: t.$en-ink-900;
+$font-size-base: 1rem;
+$line-height-base: 1.6;
+$display-font-family: t.$en-font-display;
+$display-font-weight: 700;
+$lead-font-weight: 400;
+
+// ── Radius ───────────────────────────────────────────────────
+$border-radius-sm: t.$en-radius-sm;
+$border-radius: t.$en-radius;
+$border-radius-lg: t.$en-radius-lg;
+$border-radius-xl: t.$en-radius-lg;
+$border-radius-pill: t.$en-radius-pill;
+
+// ── Borders ──────────────────────────────────────────────────
+$border-color: t.$en-border;
+
+// ── Shadows ──────────────────────────────────────────────────
+$box-shadow-sm: t.$en-shadow-sm;
+$box-shadow: t.$en-shadow;
+$box-shadow-lg: t.$en-shadow-lg;
+
+// ── Components ───────────────────────────────────────────────
+$link-color: t.$en-gold;
+$link-hover-color: t.$en-gold-soft;
+$link-decoration: none;
+
+$card-bg: t.$en-surface;
+$card-border-color: transparent;
+$card-border-radius: t.$en-radius-lg;
+$card-cap-bg: transparent;
+
+$btn-border-radius: t.$en-radius-pill;
+$btn-border-radius-sm: t.$en-radius-pill;
+$btn-border-radius-lg: t.$en-radius-pill;
+$btn-font-weight: 600;
+$btn-padding-y: 0.65rem;
+$btn-padding-x: 1.4rem;
+
+$input-bg: t.$en-surface-raised;         // white input on cream page
+$input-disabled-bg: t.$en-cream-200;
+$input-border-color: t.$en-border;
+$input-color: t.$en-ink-900;
+$input-focus-border-color: t.$en-gold;
+$input-focus-box-shadow: 0 0 0 0.2rem rgba(183, 134, 40, 0.20);
+$input-placeholder-color: t.$en-ink-400;
+$input-border-radius: t.$en-radius;
+$form-label-color: t.$en-ink-700;
+$form-label-font-weight: 500;
+
+$dropdown-bg: t.$en-surface-raised;
+$dropdown-border-color: t.$en-border;
+$dropdown-link-color: t.$en-ink-700;
+$dropdown-link-hover-color: t.$en-ink-900;
+$dropdown-link-hover-bg: t.$en-cream-200;
+$dropdown-border-radius: t.$en-radius;
+
+$offcanvas-bg-color: t.$en-surface-raised;
+$offcanvas-color: t.$en-ink-900;
+$modal-content-bg: t.$en-surface-raised;
+$modal-content-border-color: t.$en-border;
+$modal-backdrop-bg: t.$en-ink-900;
+$modal-backdrop-opacity: 0.45;
+
+$badge-font-weight: 600;
+$badge-border-radius: t.$en-radius-pill;
+
+$spacer: 1rem;

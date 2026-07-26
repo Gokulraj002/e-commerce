@@ -1,0 +1,55 @@
+# ─────────────────────────────────────────────────────────────────────
+# Elite NonVeg — Dependabot configuration
+#
+# Opens PRs weekly against `main` for:
+#   • npm dependencies at the repo root (covers all workspaces via
+#     the root package-lock.json).
+#   • GitHub Actions in .github/workflows/**.
+#
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# ─────────────────────────────────────────────────────────────────────
+
+version: 2
+
+updates:
+  # Root package-lock.json covers shared / backend / frontend / admin
+  # because they are all npm workspaces.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      # Keep dev-tool churn out of the main PR queue by batching it.
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group all @types/* updates together.
+      typescript-types:
+        patterns:
+          - "@types/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(actions)"

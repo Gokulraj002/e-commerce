@@ -1,0 +1,130 @@
+// ─────────────────────────────────────────────────────────────
+// Elite NonVeg — Design Tokens (single source of truth)
+// Warm butcher-paper: cream background, deep charcoal ink,
+// butcher crimson primary + aged gold accent. Consumed by
+// _bootstrap-overrides.scss and exposed as CSS custom properties.
+// ─────────────────────────────────────────────────────────────
+
+// ── Brand palette ────────────────────────────────────────────
+// Warm cream/paper backgrounds. Numbers grow with intensity so a
+// higher value is a slightly darker surface (like a paper stack).
+$en-cream-50:  #fdfaf3; // hero / lightest surface
+$en-cream-100: #fbf6ec; // primary app background (warm cream)
+$en-cream-200: #f5eedf; // raised surfaces / cards
+$en-cream-300: #ece3cf; // hover surfaces
+$en-cream-400: #ded2b8; // subtle borders
+
+// Deep ink for text on cream. Warm charcoal, not pure black.
+$en-ink-900: #1b1a17; // headings / primary text
+$en-ink-700: #3a352d; // body text
+$en-ink-500: #6f6858; // secondary / meta text
+$en-ink-400: #9c9484; // muted / captions
+
+$en-crimson:      #b01a22; // butcher crimson — primary (deepened for cream bg contrast)
+$en-crimson-dark: #8b1219;
+$en-accent:       #d0323b; // brighter accent red
+$en-gold:         #b78628; // aged gold accent (deepened for AA on cream)
+$en-gold-soft:    #d9b256;
+$en-green:        #2e7d32; // in-stock / fresh badges
+$en-green-soft:   #4caf50;
+
+// ── Semantic aliases ─────────────────────────────────────────
+$en-bg: $en-cream-100;
+$en-surface: $en-cream-50;         // cards sit slightly BRIGHTER than the page
+$en-surface-raised: #ffffff;       // top-most surfaces = pure white paper
+$en-border: $en-cream-400;
+$en-text: $en-ink-900;
+$en-text-dim: $en-ink-500;
+
+$en-success: $en-green;
+$en-danger: $en-accent;
+$en-warning: $en-gold;
+
+// Backwards-compat aliases (older components may still reference these).
+// Text tokens stay named the same but now point at dark ink over cream.
+$en-cream: $en-ink-900;
+$en-cream-dim: $en-ink-500;
+$en-muted: $en-ink-400;
+
+// Any legacy `$en-charcoal-*` reference now resolves to a cream surface so
+// pre-existing component styles keep working without a large refactor.
+$en-charcoal-900: $en-ink-900;      // "background" → now used as strong ink
+$en-charcoal-800: $en-cream-200;    // raised surface
+$en-charcoal-700: $en-surface;      // cards
+$en-charcoal-600: $en-cream-300;    // hover surfaces
+$en-charcoal-500: $en-cream-400;    // subtle borders
+
+// ── Typography ───────────────────────────────────────────────
+$en-font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+$en-font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+// ── Radius ───────────────────────────────────────────────────
+$en-radius-sm: 0.5rem;
+$en-radius: 0.875rem;
+$en-radius-lg: 1.25rem;
+$en-radius-pill: 999px;
+
+// ── Shadows (soft, premium — tuned for cream backgrounds) ────
+$en-shadow-sm: 0 1px 2px rgba(27, 26, 23, 0.06);
+$en-shadow: 0 6px 18px rgba(27, 26, 23, 0.08);
+$en-shadow-lg: 0 18px 40px rgba(27, 26, 23, 0.12);
+$en-shadow-gold: 0 8px 24px rgba(183, 134, 40, 0.20);
+$en-shadow-crimson: 0 10px 26px rgba(176, 26, 34, 0.22);
+
+// ── Spacing scale (rem) ──────────────────────────────────────
+$en-space-1: 0.25rem;
+$en-space-2: 0.5rem;
+$en-space-3: 0.75rem;
+$en-space-4: 1rem;
+$en-space-5: 1.5rem;
+$en-space-6: 2rem;
+$en-space-7: 3rem;
+$en-space-8: 4.5rem;
+
+// ── Motion ───────────────────────────────────────────────────
+$en-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$en-transition: 220ms $en-ease;
+
+// ── Layout ───────────────────────────────────────────────────
+$en-container-max: 1440px;
+$en-header-height: 76px;
+
+// ── CSS custom properties (runtime tokens for components/JS) ──
+:root {
+  --en-bg: #{$en-bg};
+  --en-surface: #{$en-surface};
+  --en-surface-raised: #{$en-surface-raised};
+  --en-border: #{$en-border};
+  --en-border-soft: #{$en-cream-300};
+
+  --en-crimson: #{$en-crimson};
+  --en-crimson-dark: #{$en-crimson-dark};
+  --en-accent: #{$en-accent};
+  --en-gold: #{$en-gold};
+  --en-gold-soft: #{$en-gold-soft};
+  --en-green: #{$en-green};
+
+  --en-text: #{$en-text};
+  --en-text-dim: #{$en-text-dim};
+  --en-muted: #{$en-muted};
+
+  --en-font-display: #{$en-font-display};
+  --en-font-body: #{$en-font-body};
+
+  --en-radius-sm: #{$en-radius-sm};
+  --en-radius: #{$en-radius};
+  --en-radius-lg: #{$en-radius-lg};
+  --en-radius-pill: #{$en-radius-pill};
+
+  --en-shadow-sm: #{$en-shadow-sm};
+  --en-shadow: #{$en-shadow};
+  --en-shadow-lg: #{$en-shadow-lg};
+  --en-shadow-gold: #{$en-shadow-gold};
+  --en-shadow-crimson: #{$en-shadow-crimson};
+
+  --en-transition: #{$en-transition};
+  --en-ease: #{$en-ease};
+
+  --en-container-max: #{$en-container-max};
+  --en-header-height: #{$en-header-height};
+}

@@ -1,0 +1,213 @@
+# ─────────────────────────────────────────────────────────────────────
+# Elite NonVeg — Continuous Integration
+#
+# Runs on every pull request into main and on every push to a
+# non-main branch. Also available manually via workflow_dispatch.
+#
+# Jobs:
+#   lint          → eslint across the monorepo
+#   typecheck     → tsc --noEmit per workspace (needs prisma client generated)
+#   build         → matrix build of backend / frontend / admin
+#                   (shared is built first; backend build runs `prisma generate`
+#                    with a live Postgres + Redis for parity with production)
+#   test-backend  → runs `npm --workspace backend run test --if-present`
+#                   against a Postgres 15 + Redis 7 service container
+# ─────────────────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches-ignore:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # ── Lint ──────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint --if-present
+
+  # ── Typecheck ─────────────────────────────────────────────────────
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package (produces dist/ consumed by other workspaces)
+        run: npm run build:shared
+
+      - name: Generate Prisma client (needed for backend typecheck)
+        run: npm --workspace backend run prisma:generate
+
+      - name: Typecheck all workspaces
+        run: npm run typecheck
+
+  # ── Build (matrix: backend, frontend, admin) ──────────────────────
+  build:
+    name: Build (${{ matrix.workspace }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: [backend, frontend, admin]
+
+    # Postgres + Redis service containers are provisioned so the backend's
+    # build step (`prisma generate && tsc`) has a live database URL available.
+    # Frontend and admin builds ignore these services — the small overhead
+    # is worth the simplicity of a single matrix definition.
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: elite
+          POSTGRES_PASSWORD: elite
+          POSTGRES_DB: elite_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U elite -d elite_ci"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DATABASE_URL: postgresql://elite:elite@localhost:5432/elite_ci
+      REDIS_URL: redis://localhost:6379
+      # Placeholder secrets so the backend build's env parsing (if any) succeeds
+      # in CI. These are NOT the values used in production.
+      JWT_SECRET: ci-only-not-a-real-secret
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build:shared
+
+      - name: Build ${{ matrix.workspace }}
+        run: npm --workspace ${{ matrix.workspace }} run build
+
+  # ── Backend tests ─────────────────────────────────────────────────
+  test-backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: elite
+          POSTGRES_PASSWORD: elite
+          POSTGRES_DB: elite_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U elite -d elite_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DATABASE_URL: postgresql://elite:elite@localhost:5432/elite_test
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci-only-not-a-real-secret
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build:shared
+
+      - name: Generate Prisma client
+        run: npm --workspace backend run prisma:generate
+
+      - name: Apply Prisma migrations
+        # No-op if backend has no test suite; harmless if it does.
+        run: npm --workspace backend run prisma:deploy --if-present
+
+      - name: Run backend tests
+        # Backend has no `test` script today — `--if-present` makes this a
+        # no-op until vitest/jest is wired up.
+        run: npm --workspace backend run test --if-present

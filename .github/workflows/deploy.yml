@@ -1,0 +1,89 @@
+# ─────────────────────────────────────────────────────────────────────
+# Elite NonVeg — Continuous Deployment (production)
+#
+# Triggers on every push to `main` (branch protection is expected to
+# require the CI workflow to have passed on the PR before merge) and
+# is also runnable on demand via workflow_dispatch to redeploy a
+# specific SHA/tag.
+#
+# The deploy is a single SSH command that invokes the repo's canonical
+# deploy script on the production host — the source of truth for what
+# "deploy" means lives in `deployment/scripts/deploy.sh`, not here.
+#
+# Rollback: this workflow does NOT automate rollback. On failure, SSH
+# to the host and run `bash deployment/scripts/rollback.sh` (see the
+# failure step below and .github/workflows/README.md).
+# ─────────────────────────────────────────────────────────────────────
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (commit SHA, branch, or tag) to deploy. Defaults to the current commit."
+        required: false
+        default: ""
+
+concurrency:
+  # Never run two deploys against production at once, and never cancel
+  # a deploy that's already partway through (that would leave the host
+  # in a half-updated state).
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+
+    steps:
+      - name: Resolve deploy ref
+        id: ref
+        run: |
+          INPUT_REF="${{ github.event.inputs.ref }}"
+          if [ -n "$INPUT_REF" ]; then
+            REF="$INPUT_REF"
+          else
+            REF="${{ github.sha }}"
+          fi
+          echo "value=$REF" >> "$GITHUB_OUTPUT"
+          echo "Deploying ref: $REF"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          # Fail the step at the first non-zero exit code inside the remote script.
+          script_stop: true
+          # Pass the resolved ref into the remote shell as DEPLOY_REF so
+          # deployment/scripts/deploy.sh can `git checkout` it.
+          envs: DEPLOY_REF
+          script: |
+            set -euo pipefail
+            export DEPLOY_REF="${{ steps.ref.outputs.value }}"
+            cd /home/deploy/elite
+            bash deployment/scripts/deploy.sh
+
+      - name: Report failure (rollback instructions)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.sha;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            core.error(`Deployment failed for commit ${sha}.`);
+            core.error(`Run log: ${runUrl}`);
+            core.error('Rollback: SSH to the deploy host and run:');
+            core.error('  cd /home/deploy/elite && bash deployment/scripts/rollback.sh');

@@ -1,0 +1,157 @@
+// ─────────────────────────────────────────────────────────────
+// Bootstrap 5 customization. Map our tokens onto Bootstrap's Sass
+// variables BEFORE importing the framework, then pull in only the
+// layers we use. Keeps the CSS payload lean and on-brand.
+//
+// The token layer (see _tokens.scss) drives every value here — no
+// hard-coded colors or shadows below. Focus rings share the same
+// refined ring ($shadow-focus) across inputs and buttons.
+// ─────────────────────────────────────────────────────────────
+@use 'sass:map';
+@import 'tokens';
+
+// ── Core palette ─────────────────────────────────────────────
+$primary:   $brand;
+$secondary: $zinc-500;
+$success:   $success;
+$warning:   $warning;
+$danger:    $danger;
+$info:      $info;
+$light:     $zinc-100;
+$dark:      $zinc-900;
+
+$body-color:      $zinc-900;
+$body-bg:         $zinc-50;
+$body-secondary-color: $zinc-500;
+$body-secondary-bg:    $zinc-100;
+$body-tertiary-bg:     $zinc-25;
+$body-emphasis-color:  $zinc-950;
+
+$border-color:        $zinc-200;
+$border-color-translucent: rgba($zinc-950, 0.08);
+
+$link-color:          $brand;
+$link-hover-color:    $brand-600;
+$link-decoration:     none;
+
+// ── Typography ───────────────────────────────────────────────
+$font-family-sans-serif: $font-sans;
+$font-family-monospace:  $font-mono;
+$font-size-base:         0.9375rem;   // 15px — denser than default
+$line-height-base:       1.55;
+$headings-font-weight:   600;
+$headings-line-height:   1.25;
+$headings-color:         $zinc-950;
+$small-font-size:        0.8125rem;
+
+// ── Shape ────────────────────────────────────────────────────
+$border-radius:      $radius;
+$border-radius-sm:   $radius-sm;
+$border-radius-lg:   $radius-lg;
+$border-radius-xl:   $radius-xl;
+$border-radius-pill: 50rem;
+
+$box-shadow-sm: $shadow-sm;
+$box-shadow:    $shadow-md;
+$box-shadow-lg: $shadow-lg;
+
+// ── Card ─────────────────────────────────────────────────────
+$card-border-color:  $zinc-200;
+$card-border-radius: $radius-lg;
+$card-cap-bg:        transparent;
+$card-cap-color:     $zinc-950;
+$card-spacer-y:      1.15rem;
+$card-spacer-x:      1.25rem;
+$card-title-color:   $zinc-950;
+
+// ── Table ────────────────────────────────────────────────────
+$table-cell-padding-y:  0.7rem;
+$table-cell-padding-x:  0.9rem;
+$table-border-color:    $zinc-200;
+$table-hover-bg:        $zinc-50;
+$table-striped-bg:      $zinc-25;
+$table-th-font-weight:  600;
+$table-color:           $zinc-900;
+
+// ── Forms ────────────────────────────────────────────────────
+$input-bg:                    #ffffff;
+$input-color:                 $zinc-900;
+$input-border-color:          $zinc-300;
+$input-placeholder-color:     $zinc-400;
+$input-focus-border-color:    $brand;
+$input-focus-box-shadow:      $shadow-focus;
+$input-btn-focus-box-shadow:  $shadow-focus;
+$input-btn-focus-width:       3px;
+$form-label-font-weight:      500;
+$form-label-margin-bottom:    0.35rem;
+$form-label-color:            $zinc-900;
+$form-select-focus-box-shadow: $shadow-focus;
+
+// ── Buttons ──────────────────────────────────────────────────
+$btn-font-weight:        500;
+$btn-border-radius:      $radius-sm;
+$btn-border-radius-sm:   $radius-xs;
+$btn-border-radius-lg:   $radius;
+$btn-focus-box-shadow:   $shadow-focus;
+$btn-transition:         color 0.14s $ease,
+                         background-color 0.14s $ease,
+                         border-color 0.14s $ease,
+                         box-shadow 0.14s $ease;
+
+// ── Dropdown / modal / breadcrumb ────────────────────────────
+$dropdown-bg:            #ffffff;
+$dropdown-border-color:  $zinc-200;
+$dropdown-border-radius: $radius;
+$dropdown-box-shadow:    $shadow-lg;
+$dropdown-link-color:    $zinc-900;
+$dropdown-link-hover-bg: $zinc-100;
+$dropdown-link-hover-color: $zinc-950;
+$dropdown-item-padding-x: 0.85rem;
+$dropdown-item-padding-y: 0.5rem;
+
+$modal-content-border-color:  $zinc-200;
+$modal-content-border-radius: $radius-lg;
+$modal-content-box-shadow-xs: $shadow-lg;
+$modal-content-box-shadow-sm-up: $shadow-lg;
+$modal-backdrop-bg:           $zinc-950;
+$modal-backdrop-opacity:      0.5;
+
+$breadcrumb-divider-color:      $zinc-400;
+$breadcrumb-active-color:       $zinc-950;
+$breadcrumb-font-size:          0.82rem;
+$breadcrumb-item-padding-x:     0.4rem;
+
+// ── Alerts ───────────────────────────────────────────────────
+$alert-border-radius:    $radius;
+$alert-padding-y:        0.85rem;
+$alert-padding-x:        1rem;
+
+// ── Bootstrap core + only the components the admin uses ──────
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/images';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/tables';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/dropdown';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/breadcrumb';
+@import 'bootstrap/scss/pagination';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/close';
+@import 'bootstrap/scss/modal';
+@import 'bootstrap/scss/offcanvas';
+@import 'bootstrap/scss/spinners';
+@import 'bootstrap/scss/utilities/api';

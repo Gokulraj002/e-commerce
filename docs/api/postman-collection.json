@@ -1,0 +1,753 @@
+{
+  "info": {
+    "name": "Elite NonVeg API",
+    "description": "Postman collection for the Elite NonVeg backend (Ojiva AI Technologies). Money is integer paise (₹1 = 100); weight is integer grams. All responses use the envelope { success, data, message }.\n\n- baseUrl defaults to http://localhost:4000/api/v1\n- Run 'Auth → Login (email)' first — its test script stores accessToken + refreshToken as collection variables. Every subsequent request uses {{accessToken}} as the bearer.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "elite-nonveg-api-collection"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Liveness check. Returns { status, db, cache, time }. Public."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Customer\",\n  \"phone\": \"+919876543210\",\n  \"email\": \"test.customer@example.com\",\n  \"password\": \"StrongPass1!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Create a customer account. Password ≥ 8 chars. Phone must match /^(\\+91)?[6-9]\\d{9}$/."
+          }
+        },
+        {
+          "name": "Login (phone) — customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.success && res.data && res.data.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  console.log('Stored accessToken + refreshToken on the collection.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+919000000010\",\n  \"password\": \"Customer@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login as a seeded customer (Anjali). Login accepts phone OR email plus password."
+          }
+        },
+        {
+          "name": "Login (email) — admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.success && res.data && res.data.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  console.log('Stored accessToken + refreshToken on the collection.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@elitenonveg.in\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login as the seeded Super Admin. The admin panel uses email; the customer app uses phone."
+          }
+        },
+        {
+          "name": "Refresh access token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.success && res.data && res.data.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  console.log('Rotated access + refresh tokens on the collection.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Exchange a refresh token for a new access + refresh pair. Refresh tokens rotate: the presented token is revoked."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Revoke the presented refresh token. Access token remains valid until it expires (default 15m)."
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Returns the authenticated user (never leaks passwordHash)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "List categories (tree)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "categories"]
+            },
+            "description": "Public. Returns the full category tree with sortOrder + child arrays."
+          }
+        },
+        {
+          "name": "Get category by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/categories/poultry",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "categories", "poultry"]
+            },
+            "description": "Public. Seeded slugs include: poultry, mutton, seafood, eggs, ready-to-cook, bulk."
+          }
+        },
+        {
+          "name": "List products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/products?page=1&pageSize=20&category=poultry&sort=price&order=asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" },
+                { "key": "category", "value": "poultry" },
+                { "key": "sort", "value": "price", "description": "price | rating | newest" },
+                { "key": "order", "value": "asc", "description": "asc | desc" },
+                { "key": "brand", "value": "elite-farms", "disabled": true },
+                { "key": "minPrice", "value": "0", "disabled": true, "description": "paise" },
+                { "key": "maxPrice", "value": "50000", "disabled": true, "description": "paise" },
+                { "key": "tags", "value": "chicken,curry", "disabled": true },
+                { "key": "isReadyToCook", "value": "true", "disabled": true },
+                { "key": "isFeatured", "value": "true", "disabled": true },
+                { "key": "search", "value": "chicken", "disabled": true }
+              ]
+            },
+            "description": "Public. Paginated product list with filters. Prices are integer paise."
+          }
+        },
+        {
+          "name": "List featured products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/products/featured",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "products", "featured"]
+            },
+            "description": "Public. Products flagged isFeatured=true. Used by the storefront hero row."
+          }
+        },
+        {
+          "name": "Get product by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/products/chicken-curry-cut",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "products", "chicken-curry-cut"]
+            },
+            "description": "Public. Full product with variants (weightG, mrpPaise, pricePaise), images, brand, category, and inventory hints."
+          }
+        },
+        {
+          "name": "Related products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/catalog/products/related/chicken-curry-cut",
+              "host": ["{{baseUrl}}"],
+              "path": ["catalog", "products", "related", "chicken-curry-cut"]
+            },
+            "description": "Public. Same-category picks minus the target product."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart"]
+            },
+            "description": "Authenticated. Server-owned cart: returns items with variant snapshots, subtotal, coupon (if applied), totals in paise."
+          }
+        },
+        {
+          "name": "Add item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variantId\": \"REPLACE_WITH_variant_id\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart", "items"]
+            },
+            "description": "Authenticated. Adds (or increments) a variant. quantity 1–99. variantId comes from the product's variants[] array."
+          }
+        },
+        {
+          "name": "Update item quantity",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart/items/REPLACE_WITH_cart_item_id",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart", "items", "REPLACE_WITH_cart_item_id"]
+            },
+            "description": "Authenticated. Change the quantity of an existing cart item."
+          }
+        },
+        {
+          "name": "Remove item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart/items/REPLACE_WITH_cart_item_id",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart", "items", "REPLACE_WITH_cart_item_id"]
+            },
+            "description": "Authenticated. Delete a single line item."
+          }
+        },
+        {
+          "name": "Clear cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart"]
+            },
+            "description": "Authenticated. Empties every item and removes any applied coupon."
+          }
+        },
+        {
+          "name": "Apply coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cart/apply-coupon",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart", "apply-coupon"]
+            },
+            "description": "Authenticated. Validates the coupon against the current subtotal and stores it on the cart. Seeded codes: WELCOME10 (10% off), FREESHIP (free shipping)."
+          }
+        },
+        {
+          "name": "Remove coupon",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart/coupon",
+              "host": ["{{baseUrl}}"],
+              "path": ["cart", "coupon"]
+            },
+            "description": "Authenticated. Removes any applied coupon from the cart."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        {
+          "name": "Get wishlist",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlist"]
+            },
+            "description": "Authenticated."
+          }
+        },
+        {
+          "name": "Add wishlist item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"REPLACE_WITH_product_id\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlist", "items"]
+            }
+          }
+        },
+        {
+          "name": "Remove wishlist item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/items/REPLACE_WITH_product_id",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlist", "items", "REPLACE_WITH_product_id"]
+            }
+          }
+        },
+        {
+          "name": "Move wishlist item to cart",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/items/REPLACE_WITH_product_id/move-to-cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlist", "items", "REPLACE_WITH_product_id", "move-to-cart"]
+            },
+            "description": "Adds the product's first active variant to the cart and removes it from the wishlist."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coupons",
+      "item": [
+        {
+          "name": "Validate coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\",\n  \"cartSubtotalPaise\": 79900\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/coupons/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["coupons", "validate"]
+            },
+            "description": "Public. Returns { valid, discountPaise, freeShipping? } or an error explaining why the coupon doesn't apply (min-cart, expired, etc)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "item": [
+        {
+          "name": "Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/checkout/summary?addressId=REPLACE_WITH_address_id&slotId=REPLACE_WITH_slot_id",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "summary"],
+              "query": [
+                { "key": "addressId", "value": "REPLACE_WITH_address_id" },
+                { "key": "slotId", "value": "REPLACE_WITH_slot_id", "description": "optional" }
+              ]
+            },
+            "description": "Authenticated. Recomputes pricing (subtotal, discount, shipping, total in paise) against the given address (pincode → zone → fee) and optional slot."
+          }
+        },
+        {
+          "name": "Place order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressId\": \"REPLACE_WITH_address_id\",\n  \"slotId\": \"REPLACE_WITH_slot_id\",\n  \"paymentMethod\": \"COD\",\n  \"note\": \"Please ring the bell twice.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkout/place",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "place"]
+            },
+            "description": "Authenticated. Fully transactional. paymentMethod is one of RAZORPAY | PHONEPE | CASHFREE | COD. COD orders go straight to CREATED; online methods return PENDING_PAYMENT and requiresPaymentInit=true — call POST /payments/init next."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "List my orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders?page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            },
+            "description": "Authenticated. Paginated list of the caller's orders."
+          }
+        },
+        {
+          "name": "Get my order by code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/EN-YYYYMMDD-XXXXXX",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "EN-YYYYMMDD-XXXXXX"]
+            },
+            "description": "Authenticated. Order code format: EN-<UTC-date>-<6-char nano>. Comes back on the place-order response."
+          }
+        },
+        {
+          "name": "Cancel my order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Changed my mind\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/EN-YYYYMMDD-XXXXXX/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "EN-YYYYMMDD-XXXXXX", "cancel"]
+            },
+            "description": "Authenticated. Allowed while the order is still in a pre-fulfilment state (see order.stateMachine.ts)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Init payment (open gateway)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderCode\": \"EN-YYYYMMDD-XXXXXX\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/init",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "init"]
+            },
+            "description": "Authenticated. Creates a gateway order for a PENDING_PAYMENT order and returns a client-safe init payload (never a gateway secret). Fails for COD orders. Requires the matching gateway credentials to be present in the backend env."
+          }
+        },
+        {
+          "name": "Verify payment (after checkout)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderCode\": \"EN-YYYYMMDD-XXXXXX\",\n  \"gatewayPaymentId\": \"pay_ABC123XYZ\",\n  \"signature\": \"razorpay-hmac-signature-here\",\n  \"gatewayOrderId\": \"order_ABC123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "verify"]
+            },
+            "description": "Authenticated. Validates the client-side gateway return. signature is Razorpay-only; gatewayOrderId is provided when the gateway needs it (Razorpay yes, Cashfree no — Cashfree re-fetches server-side)."
+          }
+        },
+        {
+          "name": "Webhook — Razorpay",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-razorpay-signature", "value": "REPLACE_WITH_hmac_sha256_of_raw_body_using_webhook_secret" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"payment.captured\",\n  \"payload\": {\n    \"payment\": {\n      \"entity\": {\n        \"id\": \"pay_ABC123XYZ\",\n        \"order_id\": \"order_ABC123\",\n        \"amount\": 79900,\n        \"currency\": \"INR\",\n        \"status\": \"captured\"\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/webhook/razorpay",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "webhook", "razorpay"]
+            },
+            "description": "No auth — Razorpay signs the raw body with your webhook secret and the handler verifies it. Deduped by event id."
+          }
+        },
+        {
+          "name": "Webhook — PhonePe",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-verify", "value": "REPLACE_WITH_phonepe_x_verify_header" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"response\": \"REPLACE_WITH_base64_encoded_payload_from_phonepe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/webhook/phonepe",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "webhook", "phonepe"]
+            },
+            "description": "No auth — PhonePe signs via the X-VERIFY header (sha256(base64(payload)+saltKey)+###+saltIndex)."
+          }
+        },
+        {
+          "name": "Webhook — Cashfree",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-webhook-signature", "value": "REPLACE_WITH_cashfree_signature" },
+              { "key": "x-webhook-timestamp", "value": "REPLACE_WITH_timestamp" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"order\": { \"order_id\": \"EN-YYYYMMDD-XXXXXX\", \"order_amount\": 799.00, \"order_currency\": \"INR\" },\n    \"payment\": { \"cf_payment_id\": \"9876543210\", \"payment_status\": \"SUCCESS\" }\n  },\n  \"type\": \"PAYMENT_SUCCESS_WEBHOOK\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/webhook/cashfree",
+              "host": ["{{baseUrl}}"],
+              "path": ["payments", "webhook", "cashfree"]
+            },
+            "description": "No auth — Cashfree signs the timestamp+raw-body with your secret."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delivery",
+      "item": [
+        {
+          "name": "Serviceability check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/delivery/serviceability?pincode=500032",
+              "host": ["{{baseUrl}}"],
+              "path": ["delivery", "serviceability"],
+              "query": [
+                { "key": "pincode", "value": "500032", "description": "6-digit Indian pincode" }
+              ]
+            },
+            "description": "Public. Returns whether the pincode falls inside any active DeliveryZone and the fee. Seeded zone 'Hyderabad Central' covers 500001, 500016, 500018, 500032, 500034, 500081, 500084."
+          }
+        },
+        {
+          "name": "Available slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/delivery/slots?date=2026-07-25&pincode=500032",
+              "host": ["{{baseUrl}}"],
+              "path": ["delivery", "slots"],
+              "query": [
+                { "key": "date", "value": "2026-07-25", "description": "YYYY-MM-DD" },
+                { "key": "pincode", "value": "500032", "description": "optional; filters slots by zone" }
+              ]
+            },
+            "description": "Optional auth. Returns bookable slots for the day (past-cutoff and full slots are excluded)."
+          }
+        }
+      ]
+    }
+  ]
+}

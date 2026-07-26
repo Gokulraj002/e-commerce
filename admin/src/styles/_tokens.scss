@@ -1,0 +1,170 @@
+// ─────────────────────────────────────────────────────────────
+// Elite NonVeg — Admin design tokens (premium refresh).
+// Vercel/Linear-inspired: true-neutral zinc scale, refined
+// brand crimson, deep navy sidebar with hairline borders,
+// tabular-numeral typography, layered depth via inset borders
+// rather than heavy shadows.
+// ─────────────────────────────────────────────────────────────
+
+// ── Brand ───────────────────────────────────────────────────
+// Slightly deepened crimson for AA contrast against light bg.
+$brand:           #b3121e;
+$brand-600:       #8f0e18;
+$brand-100:       #fbe6e8;
+$brand-tint:      rgba(179, 18, 30, 0.08);
+$brand-focus:     rgba(179, 18, 30, 0.22);
+
+// Legacy names (kept so no other file has to change).
+$brand-crimson:   $brand;
+$brand-crimson-600: $brand-600;
+$brand-crimson-100: $brand-100;
+
+// ── Neutrals (true-neutral zinc scale, warmer than slate) ───
+$zinc-25:  #fdfdfd;
+$zinc-50:  #fafafa;
+$zinc-100: #f4f4f5;
+$zinc-150: #ececee;
+$zinc-200: #e4e4e7;
+$zinc-300: #d4d4d8;
+$zinc-400: #a1a1aa;
+$zinc-500: #71717a;
+$zinc-600: #52525b;
+$zinc-700: #3f3f46;
+$zinc-800: #27272a;
+$zinc-900: #18181b;
+$zinc-950: #09090b;
+
+// Legacy slate aliases point at the zinc scale (compat).
+$slate-25: $zinc-25;
+$slate-50: $zinc-50;
+$slate-100: $zinc-100;
+$slate-200: $zinc-200;
+$slate-300: $zinc-300;
+$slate-400: $zinc-400;
+$slate-500: $zinc-500;
+$slate-600: $zinc-600;
+$slate-700: $zinc-700;
+$slate-800: $zinc-800;
+$slate-900: $zinc-900;
+$slate-950: $zinc-950;
+
+// ── Semantic ────────────────────────────────────────────────
+$success: #16a34a;
+$success-100: #dcfce7;
+$warning: #d97706;
+$warning-100: #fef3c7;
+$danger:  #dc2626;
+$danger-100: #fee2e2;
+$info:    #0284c7;
+$info-100: #dbeafe;
+
+// ── Sidebar (premium deep-navy with hairline separators) ────
+$sidebar-bg:          #0b0d10; // near-black anthracite
+$sidebar-bg-2:        #101317;
+$sidebar-surface:     #14181d; // active row surface
+$sidebar-fg:          #cdd3dc;
+$sidebar-fg-muted:    #7a828e;
+$sidebar-active-bg:   rgba(179, 18, 30, 0.14);
+$sidebar-active-fg:   #ffffff;
+$sidebar-active-bar:  $brand;
+$sidebar-hover-bg:    rgba(255, 255, 255, 0.04);
+$sidebar-border:      rgba(255, 255, 255, 0.06);
+$sidebar-width:            256px;
+$sidebar-width-collapsed:  72px;
+$topbar-height:            60px;
+
+// ── Typography ──────────────────────────────────────────────
+$font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+$font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+// ── Radius / shadow / motion / spacing ──────────────────────
+$radius-xs: 4px;
+$radius-sm: 6px;
+$radius:    10px;
+$radius-lg: 14px;
+$radius-xl: 20px;
+
+// Depth: use hairline inset borders for cheap layering, keep
+// shadows quiet unless the element genuinely elevates.
+$shadow-xs: 0 1px 0 rgba(9, 9, 11, 0.04);
+$shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.05), 0 1px 3px rgba(9, 9, 11, 0.05);
+$shadow-md: 0 4px 12px rgba(9, 9, 11, 0.07);
+$shadow-lg: 0 16px 40px rgba(9, 9, 11, 0.12);
+$shadow-focus: 0 0 0 3px $brand-focus;
+
+$ease: cubic-bezier(0.22, 1, 0.36, 1);
+$duration: 180ms;
+
+// ── CSS custom properties (runtime tokens) ──────────────────
+:root {
+  --brand: #{$brand};
+  --brand-600: #{$brand-600};
+  --brand-100: #{$brand-100};
+  --brand-tint: #{$brand-tint};
+  --brand-focus: #{$brand-focus};
+
+  --bg-body:    #{$zinc-50};
+  --bg-surface: #ffffff;
+  --bg-muted:   #{$zinc-100};
+  --bg-subtle:  #{$zinc-150};
+
+  --border:        #{$zinc-200};
+  --border-strong: #{$zinc-300};
+  --border-hairline: rgba(9, 9, 11, 0.06);
+
+  --text:        #{$zinc-900};
+  --text-strong: #{$zinc-950};
+  --text-muted:  #{$zinc-500};
+  --text-subtle: #{$zinc-400};
+
+  --success: #{$success};
+  --success-100: #{$success-100};
+  --warning: #{$warning};
+  --warning-100: #{$warning-100};
+  --danger:  #{$danger};
+  --danger-100: #{$danger-100};
+  --info:    #{$info};
+  --info-100: #{$info-100};
+
+  --sidebar-bg:            #{$sidebar-bg};
+  --sidebar-surface:       #{$sidebar-surface};
+  --sidebar-fg:            #{$sidebar-fg};
+  --sidebar-fg-muted:      #{$sidebar-fg-muted};
+  --sidebar-active-bg:     #{$sidebar-active-bg};
+  --sidebar-active-fg:     #{$sidebar-active-fg};
+  --sidebar-active-bar:    #{$sidebar-active-bar};
+  --sidebar-hover-bg:      #{$sidebar-hover-bg};
+  --sidebar-border:        #{$sidebar-border};
+  --sidebar-width:         #{$sidebar-width};
+  --sidebar-width-collapsed: #{$sidebar-width-collapsed};
+  --topbar-height:         #{$topbar-height};
+
+  --radius-xs: #{$radius-xs};
+  --radius-sm: #{$radius-sm};
+  --radius:    #{$radius};
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+
+  --shadow-xs: #{$shadow-xs};
+  --shadow-sm: #{$shadow-sm};
+  --shadow-md: #{$shadow-md};
+  --shadow-lg: #{$shadow-lg};
+  --shadow-focus: #{$shadow-focus};
+
+  --ease: #{$ease};
+  --duration: #{$duration};
+
+  --font-sans: #{$font-sans};
+  --font-mono: #{$font-mono};
+
+  // Tabular-numeral variant for financial values (₹, quantities, counts).
+  --tabular: "tnum" 1, "cv11" 1, "ss01" 1;
+}
+
+body {
+  font-feature-settings: "cv11" 1, "ss01" 1;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: var(--tabular);
+}

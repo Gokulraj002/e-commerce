@@ -1,0 +1,25 @@
+// ─────────────────────────────────────────────────────────────
+// Elite NonVeg — global stylesheet entrypoint.
+// Order matters:
+//   1. Our Bootstrap variable overrides (must precede bootstrap).
+//   2. Bootstrap itself (functions, variables, all components).
+//   3. Our token custom-properties + app component layer.
+// ─────────────────────────────────────────────────────────────
+
+// 1. Override Bootstrap's SCSS variables.
+@import 'bootstrap-overrides';
+
+// 2. Full Bootstrap 5 build.
+@import 'bootstrap/scss/bootstrap';
+
+// 3. Elite NonVeg component layer. It `@use`s tokens, which emits the runtime
+//    :root custom properties exactly once.
+@import 'components';
+
+// 4. Global body font-feature-settings — turns on Inter's optical variants
+//    ('cv11' = single-storey a, 'ss01' = disambiguated 6/9/g) plus standard
+//    ligatures and kerning. Small change, disproportionate lift: text reads
+//    more humanist and editorial across every panel of the app.
+body {
+  font-feature-settings: 'cv11', 'ss01', 'liga', 'kern';
+}

@@ -1,0 +1,39 @@
+{
+  "name": "elite-nonveg",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ojiva AI Technologies — Enterprise Fresh-Meat E-Commerce Platform (Customer Web + Admin + API)",
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend",
+    "admin"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:admin": "npm run dev --workspace admin",
+    "build": "npm run build --workspace shared && npm run build --workspace backend && npm run build --workspace frontend && npm run build --workspace admin",
+    "build:shared": "npm run build --workspace shared",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,scss,css,json,md}\"",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.34.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0"
+  }
+}

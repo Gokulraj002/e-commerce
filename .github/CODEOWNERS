@@ -1,0 +1,21 @@
+# ─────────────────────────────────────────────────────────────────────
+# Elite NonVeg — CODEOWNERS
+#
+# GitHub uses the LAST matching pattern to assign reviewers, so more
+# specific paths go below more general ones.
+#
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/managing-repository-settings/about-code-owners
+# ─────────────────────────────────────────────────────────────────────
+
+# Backend service (Node.js + Express + Prisma + BullMQ)
+backend/**                @ojiva-ai/backend
+
+# Customer web app (React + Vite)
+frontend/**               @ojiva-ai/frontend
+
+# Admin web app (React + Vite)
+admin/**                  @ojiva-ai/frontend
+
+# Infra, deploy scripts, and CI/CD
+deployment/**             @ojiva-ai/devops
+.github/**                @ojiva-ai/devops
